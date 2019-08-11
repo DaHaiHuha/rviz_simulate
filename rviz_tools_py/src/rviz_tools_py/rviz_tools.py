@@ -465,7 +465,7 @@ class RvizMarkers(object):
                 break
         return [r, g, b, a]
 
-    def publishSphere(self, pose, color, scale, lifetime=None):
+    def publishSphere(self, pose, color, scale, lifetime=None, toArray = False):
         """
         Publish a sphere Marker. This renders 3D looking sphere.
 
@@ -525,6 +525,9 @@ class RvizMarkers(object):
 
         # Set the pose
         sphere_marker.pose = sphere_pose
+
+        if toArray==True:
+            return sphere_marker
 
         return self.publishMarker(sphere_marker)
 
@@ -1563,8 +1566,8 @@ def genPublishArrow_simple(point_list, headings, markers, color, lifetime=1.0, t
             markers.publishArrow(T, 'pink', scale, lifetime, toArray)
 
 
-def genPublishPathArray_simple(points, markers, colors, width, lifetime=1.0, toArray=True):
-    pathArray = ArrayMarkers('path_Array')
+def genPublishPathArray_simple(points, markers, colors, width, pathArray_name, lifetime=5.0, toArray=True, toPub = True):
+    pathArray = ArrayMarkers(pathArray_name)
     # color = getRandomColor()
     for count, lines in enumerate(points):
         paths = []
@@ -1589,7 +1592,39 @@ def genPublishPathArray_simple(points, markers, colors, width, lifetime=1.0, toA
     #     print >> fb, pathArray.inerMarker.markers
     # print >>  pathArray.inerMarker.markers
     # print(len(pathArray.inerMarker.markers))
+    if toPub == True:
+        return pathArray
+
     pathArray.pubulishMarkerArrow()
+
+# def genPublishPathArray_simple2(points, markers, colors, width, pathArray, lifetime=5.0, toArray=True):
+#     # pathArray = ArrayMarkers('lanemarker_Array')
+#     # color = getRandomColor()
+#     for count, lines in enumerate(points):
+#         paths = []
+#         # print(count)
+#         for i in lines:
+#             if i == []:
+#                 continue
+#             # print(type(i[0]))
+#             # print('i[0]:',i[0])
+#             # print("--------")
+#             # print(i)
+#             paths.append(Point(i[0], i[1], i[2]))
+#             # print(i[0])
+#             # width = 0.1
+#             # path, color, width, lifetime
+#         # markers.publishPath(paths, 'white', width, lifetime, toArray)
+
+#         tmp = markers.publishPath(
+#             paths, colors, width, pathArray.in_id, lifetime, toArray)
+#         pathArray.addMarkers(tmp)
+#     # with open('test_bug.txt', 'w') as fb:
+#     #     print >> fb, pathArray.inerMarker.markers
+#     # print >>  pathArray.inerMarker.markers
+#     # print(len(pathArray.inerMarker.markers))
+#     pathArray.pubulishMarkerArrow()
+
 
 
 def genPublishArrowArray_simple(point_list, headings, markers, color, lifetime=10.0, toArray=True):
@@ -1618,6 +1653,20 @@ def genPublishArrowArray_simple(point_list, headings, markers, color, lifetime=1
         #   break
     # print(len(pathArray.inerMarker.markers))
     pathArray.pubulishMarkerArrow()
+
+def genPublishSphereArray_simple(point_list, markers, color, arrayName, scale, lifetime = None, toArray = True, toPub = True):
+
+    sphereArray = ArrayMarkers(arrayName)
+    # count = 0
+    for ele in point_list:
+        
+        p = Point(ele[0], ele[1], ele[2])
+        # print(p)
+        tmp = markers.publishSphere(p, color, scale, lifetime, toArray)
+        sphereArray.addMarkers(tmp)
+    if toPub == True:
+        return sphereArray
+    sphereArray.pubulishMarkerArrow()
 
 
 def create_cloud_xyz(header, points):
@@ -1663,7 +1712,7 @@ def convert2cloud2(temp_point, _header = "/map", _topic = 'point_cloud'):
 
     divider_pub = rospy.Publisher(_topic, PointCloud2, queue_size=10)
     divider_pub.publish(pointclouds)
-    print("pub once")
+    # print("pub once")
     return True
 
 

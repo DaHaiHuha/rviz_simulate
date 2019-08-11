@@ -13,6 +13,8 @@ from tf import transformations  # rotation_matrix(), concatenate_matrices()
 
 import rviz_tools_py.readpb as readpb
 import rviz_tools_py.rviz_tools as rviz_tools
+from rviz_tools_py.rviz_tools import ArrayMarkers
+
 
 # import and define the public_parameter
 from rviz_tools_py.public_para import Public_para as _para
@@ -23,19 +25,44 @@ rospy.init_node(_para.static_node_name, anonymous=False,
 
 rate = rospy.Rate(_para.static_pub_rate)
 divider_color = _para.divider_color
+lane_marker_color = _para.lane_marker_color
 
 # initialize the publish class
 markers_divider = rviz_tools.RvizMarkers(
     _para.static_frame, _para.static_divider_topic)
 
+markers_lanes = rviz_tools.RvizMarkers(
+    _para.static_frame, _para.static_lane_topic)
+
+markers_light = rviz_tools.RvizMarkers(
+    _para.static_frame, _para.static_light_topic)
+
 # path and load data
 points = readpb.read_divider_txt(
     file_path=_para.divider_txt)
 
+lanemarkers = np.load(_para.lane_markers)
+
+light_list = _para.light_gps
 
 while not rospy.is_shutdown():
-    rviz_tools.genPublishPathArray_simple(
-        points, markers_divider, divider_color, _para.divider_width, lifetime=_para.static_refresh_time, toArray=True)
+
+    # genPublishPathArray_simple(
+    #   points, markers, colors, width, pathArray_name, lifetime=5.0, toArray=True, toPub = True)
+    _divider = rviz_tools.genPublishPathArray_simple(
+        points, markers_divider, divider_color, _para.divider_width, _para.divider_ArrayTopic, lifetime=_para.static_refresh_time, toArray=True, toPub=True)
+
+    _lanemarker = rviz_tools.genPublishPathArray_simple(
+        lanemarkers, markers_lanes, lane_marker_color, _para.lanemarker_width, _para.lanemarker_ArrayTopic, lifetime=_para.static_refresh_time, toArray=True, toPub=True)
+    
+    # genPublishSphereArray_simple(point_list，markers, color, arrayName, sacale, lifetime = None, toArray = True)
+    _lightmarker = rviz_tools.genPublishSphereArray_simple(
+        light_list, markers_light, _para.light_color, _para.lights_ArrayTopic, _para.light_sacale, lifetime=_para.static_refresh_time, toArray=True, toPub=True)
+
+    _lightmarker.pubulishMarkerArrow()
+    _divider.pubulishMarkerArrow()
+    _lanemarker.pubulishMarkerArrow()
+
     rate.sleep()  # 1 Hz
 
 # markers.publishPath(

@@ -5,12 +5,17 @@
 import numpy as np
 import random
 import glob
+from rviz_tools_py.public_para import Public_para as _para
+
+# gps_test_path = '/home/apple/catkin_ws/src/rviz_tools_py/data/GPStrafficLine.txt'
+# test_bug_txt = '/home/apple/catkin_ws/test_bug.txt'
+# np_data_path = '/home/apple/catkin_ws/src/rviz_tools_py/data/gps_pre_frame2.npy'
+# light_path = '/home/apple/catkin_ws/src/rviz_tools_py/new_data/traffic_hdmap.txt'
 
 
-gps_test_path = '/home/apple/catkin_ws/src/rviz_tools_py/data/GPStrafficLine.txt'
-test_bug_txt = '/home/apple/catkin_ws/test_bug.txt'
-np_data_path = '/home/apple/catkin_ws/src/rviz_tools_py/data/gps_pre_frame2.npy'
-
+gps_test_path = _para.gps_test_path
+np_data_path = _para.np_data_path
+test_path = _para.test_path
 
 def read_points_per_frame(path=gps_test_path):
 
@@ -45,6 +50,35 @@ def read_points_per_frame(path=gps_test_path):
     points_line.append(points_line_i)
 
     return frame, points_line, headings
+
+
+def load_and_save():
+    frame, points_line, headings = read_points_per_frame()
+    np.save(np_data_path, [frame, points_line, headings])
+
+def print_test():
+    trajactor, points_line, headings = np.load(np_data_path)
+    with open(test_path, 'w') as fb:
+        print >> fb, 'trajactor'
+        print >> fb, np.shape(trajactor),type(trajactor)
+        print >> fb, np.shape(trajactor[0]),type(trajactor[0])
+        print >> fb, trajactor
+        print >> fb, 'points_line'
+        print >> fb, np.shape(points_line), type(points_line)
+        print >> fb, np.shape(points_line[0]), type(points_line[0])
+        print >> fb, points_line
+        print >> fb, 'headings'
+        print >> fb, np.shape(headings), type(headings)
+        print >> fb, np.shape(headings[0]), type(headings[0])
+        print >> fb, headings
+
+
+if __name__ == "__main__":
+    # load_and_save()
+    print_test()
+
+
+
     # tmp = np.loadtxt(gps_test_path, delimiter=' ')
 
     # frame = []
@@ -70,19 +104,21 @@ def read_points_per_frame(path=gps_test_path):
     # temp_point =np.array([tmp[i:i + step] for line in range(0, len(tmp), step)], dtype=float)
 
 
-def convert2cloud(temp_point):
-    temp_point = np.array(temp_point)
-    x = temp_point[:, 0].reshape(-1)
-    y = temp_point[:, 1].reshape(-1)
-    z = temp_point[:, 2].reshape(-1)
-    cloud = np.stack((x, y, z))
+# def convert2cloud(temp_point):
+#     temp_point = np.array(temp_point)
+#     x = temp_point[:, 0].reshape(-1)
+#     y = temp_point[:, 1].reshape(-1)
+#     z = temp_point[:, 2].reshape(-1)
+#     cloud = np.stack((x, y, z))
 #     header = Header()
 #     header.stamp = rospy.Time().now()
 #     header.frame_id = "divider"
 #     pointclouds = create_cloud_xyz(header, cloud.T)
 
 
-if __name__ == "__main__":
+
+
+
     # frame, points_line, headings = read_points_per_frame()
     # # aa = read_points_per_frame()
     # #print(type(aa))
@@ -96,22 +132,22 @@ if __name__ == "__main__":
     #     convert2cloud(eele)
     # print(type(frame), type(points_line))
     # (frame, points_line) = l
-    trajactor, points_line, headings = np.load(np_data_path)
-    with open(test_bug_txt, 'w') as fb:
-         print >> fb, 'trajactor'
-         print >> fb, np.shape(trajactor),type(trajactor)
-         print >> fb, np.shape(trajactor[0]),type(trajactor[0])
-         print >> fb, trajactor
-         print >> fb, 'points_line'
-         print >> fb, np.shape(points_line), type(points_line)
-         print >> fb, np.shape(points_line[0]), type(points_line[0])
-         print >> fb, points_line
-         print >> fb, 'headings'
-         print >> fb, np.shape(headings), type(headings)
-         print >> fb, np.shape(headings[0]), type(headings[0])
-         print >> fb, headings
+    # trajactor, points_line, headings = np.load(np_data_path)
+    # with open(test_path, 'w') as fb:
+    #      print >> fb, 'trajactor'
+    #      print >> fb, np.shape(trajactor),type(trajactor)
+    #      print >> fb, np.shape(trajactor[0]),type(trajactor[0])
+    #      print >> fb, trajactor
+    #      print >> fb, 'points_line'
+    #      print >> fb, np.shape(points_line), type(points_line)
+    #      print >> fb, np.shape(points_line[0]), type(points_line[0])
+    #      print >> fb, points_line
+    #      print >> fb, 'headings'
+    #      print >> fb, np.shape(headings), type(headings)
+    #      print >> fb, np.shape(headings[0]), type(headings[0])
+    #      print >> fb, headings
 
-
+'''
 def read_gps_all(path=gps_test_path):
     points = []
     headings = []
@@ -141,7 +177,7 @@ def read_gps_all(path=gps_test_path):
 
     return np.array(points), np.array(headings)
 
-
+'''
 '''
 
 
