@@ -153,19 +153,19 @@ class RvizMarkers(object):
 
         # Sphere Marker (A single sphere)
         # This renders a low-quality sphere
-        self.sphere_marker = Marker()
-        self.sphere_marker.header.frame_id = self.base_frame
-        self.sphere_marker.ns = "Sphere"  # unique ID
-        self.sphere_marker.type = Marker().SPHERE
-        self.sphere_marker.action = Marker().ADD
-        self.sphere_marker.lifetime = self.marker_lifetime
-        self.sphere_marker.pose.position.x = 0
-        self.sphere_marker.pose.position.y = 0
-        self.sphere_marker.pose.position.z = 0
-        self.sphere_marker.pose.orientation.x = 0.0
-        self.sphere_marker.pose.orientation.y = 0.0
-        self.sphere_marker.pose.orientation.z = 0.0
-        self.sphere_marker.pose.orientation.w = 1.0
+        # self.sphere_marker = Marker()
+        # self.sphere_marker.header.frame_id = self.base_frame
+        # self.sphere_marker.ns = "Sphere"  # unique ID
+        # self.sphere_marker.type = Marker().SPHERE
+        # self.sphere_marker.action = Marker().ADD
+        # self.sphere_marker.lifetime = self.marker_lifetime
+        # self.sphere_marker.pose.position.x = 0
+        # self.sphere_marker.pose.position.y = 0
+        # self.sphere_marker.pose.position.z = 0
+        # self.sphere_marker.pose.orientation.x = 0.0
+        # self.sphere_marker.pose.orientation.y = 0.0
+        # self.sphere_marker.pose.orientation.z = 0.0
+        # self.sphere_marker.pose.orientation.w = 1.0
 
         # Sphere Marker #2 (A single sphere)
         # A Sphere List with one sphere, this renders a
@@ -235,7 +235,7 @@ class RvizMarkers(object):
 
         # Mesh Marker
         self.mesh_marker = Marker()
-        self.mesh_marker.header.frame_id = self.base_frame
+        # self.mesh_marker.header.frame_id = self.base_frame
         self.mesh_marker.ns = "Mesh"  # unique ID
         self.mesh_marker.action = Marker().ADD
         self.mesh_marker.type = Marker().MESH_RESOURCE
@@ -465,7 +465,7 @@ class RvizMarkers(object):
                 break
         return [r, g, b, a]
 
-    def publishSphere(self, pose, color, scale, lifetime=None, toArray = False):
+    def publishSphere(self, pose, color, scale, in_id = 0, lifetime=None, toArray = False):
         """
         Publish a sphere Marker. This renders 3D looking sphere.
 
@@ -474,6 +474,19 @@ class RvizMarkers(object):
         @param scale (ROS Vector3, float)
         @param lifetime (float, None = never expire)
         """
+        self.sphere_marker = Marker()
+        self.sphere_marker.header.frame_id = self.base_frame
+        self.sphere_marker.ns = "Sphere"  # unique ID
+        self.sphere_marker.type = Marker().SPHERE
+        self.sphere_marker.action = Marker().ADD
+        self.sphere_marker.lifetime = self.marker_lifetime
+        self.sphere_marker.pose.position.x = 0
+        self.sphere_marker.pose.position.y = 0
+        self.sphere_marker.pose.position.z = 0
+        self.sphere_marker.pose.orientation.x = 0.0
+        self.sphere_marker.pose.orientation.y = 0.0
+        self.sphere_marker.pose.orientation.z = 0.0
+        self.sphere_marker.pose.orientation.w = 1.0
 
         if (self.muted == True):
             return True
@@ -503,7 +516,7 @@ class RvizMarkers(object):
             return False
 
         # Increment the ID number
-        self.sphere_marker.id += 1
+        self.sphere_marker.id = in_id
 
         # Get the default parameters
         sphere_marker = self.sphere_marker
@@ -595,7 +608,7 @@ class RvizMarkers(object):
 
         return self.publishMarker(sphere_marker)
 
-    def publishArrow(self, pose, color, scale, in_id = 0, lifetime=None, toArray=False):
+    def publishArrow(self, pose, color, scale, base_frame, in_id = 0, lifetime=None, toArray=False):
         """
         Publish an arrow Marker.
 
@@ -605,7 +618,7 @@ class RvizMarkers(object):
         @param lifetime (float, None = never expire)
         """
         self.arrow_marker = Marker()
-        self.arrow_marker.header.frame_id = self.base_frame
+        self.arrow_marker.header.frame_id = base_frame
         self.arrow_marker.ns = "Arrow"  # unique ID
         self.arrow_marker.action = Marker().ADD
         self.arrow_marker.type = Marker().ARROW
@@ -915,7 +928,7 @@ class RvizMarkers(object):
 
         return True
 
-    def publishMesh(self, pose, file_name, color, scale, lifetime=None, toArray = False):
+    def publishMesh(self, pose, file_name, color, scale, base_frame, lifetime=None, toArray = False):
         """
         Publish a mesh Marker. The mesh file can be a binary STL or collada DAE file.
 
@@ -925,6 +938,12 @@ class RvizMarkers(object):
         @param scale (ROS Vector3, float)
         @param lifetime (float, None = never expire)
         """
+        # self.mesh_marker = Marker()
+        self.mesh_marker.header.frame_id = base_frame
+        # self.mesh_marker.ns = "Mesh"  # unique ID
+        # self.mesh_marker.action = Marker().ADD
+        # self.mesh_marker.type = Marker().MESH_RESOURCE
+        # self.mesh_marker.lifetime = self.marker_lifetime
 
         if (self.muted == True):
             return True
@@ -1657,16 +1676,33 @@ def genPublishArrowArray_simple(point_list, headings, markers, color, lifetime=1
 def genPublishSphereArray_simple(point_list, markers, color, arrayName, scale, lifetime = None, toArray = True, toPub = True):
 
     sphereArray = ArrayMarkers(arrayName)
-    # count = 0
+    count = 0
     for ele in point_list:
         
         p = Point(ele[0], ele[1], ele[2])
         # print(p)
-        tmp = markers.publishSphere(p, color, scale, lifetime, toArray)
+        tmp = markers.publishSphere(p, color, scale, count, lifetime, toArray)
         sphereArray.addMarkers(tmp)
+        count+=1
     if toPub == True:
         return sphereArray
     sphereArray.pubulishMarkerArrow()
+
+def genPublishSphereArray_simple_plus(point_list, markers, marker_array, color, scale, count, lifetime = None, toArray = True, toPub = True):
+
+    # sphereArray = ArrayMarkers(arrayName)
+    # count = 0
+    for ele in point_list:
+        p = Point(ele[0], ele[1], ele[2])
+        # print(p)
+        tmp = markers.publishSphere(p, color, scale, count, lifetime, toArray)
+        marker_array.addMarkers(tmp)
+        count+=1
+    if toPub == True:
+        return marker_array, count
+    else:
+        print("Wrong Doer!")
+    # marker_array.pubulishMarkerArrow()
 
 
 def create_cloud_xyz(header, points):
@@ -1696,7 +1732,7 @@ def convert2cloud(temp_point):
     # print("pub once")
     return True
 
-def convert2cloud2(temp_point, _header = "/map", _topic = 'point_cloud'):
+def convert2cloud2(temp_point, _header = "/vehicle", _topic = 'point_cloud'):
     temp_point = np.array(temp_point)
     x = temp_point[:, 0].reshape(-1)
     y = temp_point[:, 1].reshape(-1)

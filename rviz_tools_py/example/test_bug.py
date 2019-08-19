@@ -16,6 +16,7 @@ from rviz_tools_py.public_para import Public_para as _para
 gps_test_path = _para.gps_test_path
 np_data_path = _para.np_data_path
 test_path = _para.test_path
+plus_data_path = _para.plus_data_path
 
 def read_points_per_frame(path=gps_test_path):
 
@@ -51,6 +52,18 @@ def read_points_per_frame(path=gps_test_path):
 
     return frame, points_line, headings
 
+def save_plus_data(plus_data_path, file_name):
+    with open(plus_data_path, 'r') as f:
+        line = f.readline()
+        data_list = []
+        while line:
+            num = map(float,line.split())
+            # print(type(num))
+            data_list.append(num)
+            line = f.readline()
+    data_array = np.array(data_list)
+    np.save(file_name, data_array)
+
 
 def load_and_save():
     frame, points_line, headings = read_points_per_frame()
@@ -75,8 +88,22 @@ def print_test():
 
 if __name__ == "__main__":
     # load_and_save()
-    print_test()
-
+    # print_test()
+    list = [16, 67]
+    path = '/home/apple/catkin_ws/src/rviz_tools_py/new_data/file/'
+    plus_data_path = '/home/apple/catkin_ws/src/rviz_tools_py/new_data/file/'# _para.plus_data_path
+    list_num = 0
+    for l in list:
+        save_plus_data(path+str(l)+'A.txt', path+str(l)+'A.npy')
+        save_plus_data(path+str(l)+'B.txt', path+str(l)+'B.npy')
+        print(str(l)+'A.npy')
+        # blue_point = np.load(plus_data_path+str(list[list_num])+'A.npy', allow_pickle=True)
+        # red_point = np.load(plus_data_path+str(list[list_num])+'B.npy', allow_pickle=True)
+        # print('blue_point', blue_point)
+        # print('red_point', red_point)
+    # save_plus_data(plus_data_path, 'divider12')
+    # tmp = np.load(plus_data_path+'divider.npy', allow_pickle=True)
+    # print(tmp)
 
 
     # tmp = np.loadtxt(gps_test_path, delimiter=' ')

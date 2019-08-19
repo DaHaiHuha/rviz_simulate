@@ -5,8 +5,8 @@ import numpy as np
 import os
 import glob
 
-from HDMap_pb2 import HDMap
-from proto.SourceInfo_pb2 import GPSInfo
+# from HDMap_pb2 import HDMap
+# from proto.SourceInfo_pb2 import GPSInfo
 
 
 class element(object):

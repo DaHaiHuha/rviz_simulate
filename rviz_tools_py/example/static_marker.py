@@ -41,7 +41,7 @@ markers_light = rviz_tools.RvizMarkers(
 points = readpb.read_divider_txt(
     file_path=_para.divider_txt)
 
-lanemarkers = np.load(_para.lane_markers)
+lanemarkers = np.load(_para.lane_markers, allow_pickle=True)# , allow_pickle=True
 
 light_list = _para.light_gps
 
